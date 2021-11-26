@@ -37,12 +37,18 @@ from scctimeentry import TimeEntry
 
 import vau
 import choghadiya as ch
+from suntime import suntime
 
 
 class CSSApp(Frame):
-
-    def __init__(self, parent=None, app_title=None, app_icon=None, app_height=-1, app_width=-1):
-
+    def __init__(
+        self,
+        parent=None,
+        app_title=None,
+        app_icon=None,
+        app_height=-1,
+        app_width=-1,
+    ):
         def create_sub_frames(container):
             container.result_win = None
             return
@@ -51,45 +57,66 @@ class CSSApp(Frame):
             container.de = DateEntry(container, " Date : ")
             container.de.hide_hints()
             container.de.set(date_value=dttm.now())
-            container.de.grid(row=0, column=0, padx=(10, 5), pady=(5, 0),
-                              sticky=(W, E))
+            container.de.grid(
+                row=0, column=0, padx=(10, 5), pady=(5, 0), sticky=(W, E)
+            )
 
-            container.sr = TimeEntry(container, " Sunrise Time :")
-            container.sr.hide_hints()
-            container.sr.set(time_value=tm(hour=6, minute=30, second=0))
-            container.sr.grid(row=1, column=0, padx=(10, 5), pady=(0, 0),
-                              sticky=(W, E))
+            # container.sr = TimeEntry(container, " Sunrise Time :")
+            # container.sr.hide_hints()
+            # container.sr.set(time_value=tm(hour=6, minute=30, second=0))
+            # container.sr.grid(row=1, column=0, padx=(10, 5), pady=(0, 0),
+            #                   sticky=(W, E))
+
+            # container.lb = Label(container, text="Location")
+            # container.lb.grid(row=1, column=1, sticky=(W, E))
+            container.lo = Text(container)
+            container.lo.grid(
+                row=1, column=0, padx=(10, 5), pady=(0, 0), sticky=(W, E)
+            )
 
             container.ss = TimeEntry(container, " Sunset Time :")
             container.ss.hide_hints()
             container.ss.set(time_value=tm(hour=18, minute=30, second=0))
-            container.ss.grid(row=2, column=0, padx=(10, 5), pady=(0, 0),
-                              sticky=(W, E))
+            container.ss.grid(
+                row=2, column=0, padx=(10, 5), pady=(0, 0), sticky=(W, E)
+            )
 
             container.nsr = TimeEntry(container, " Next Sunrise Time :")
             container.nsr.hide_hints()
             container.nsr.set(time_value=tm(hour=6, minute=30, second=0))
-            container.nsr.grid(row=3, column=0, padx=(10, 5), pady=(0, 0),
-                               sticky=(W, E))
+            container.nsr.grid(
+                row=3, column=0, padx=(10, 5), pady=(0, 0), sticky=(W, E)
+            )
 
             container.cf = TimeEntry(container, " Calculate for time :")
             container.cf.hide_hints()
             container.cf.set(time_value=dttm.now())
-            container.cf.grid(row=4, column=0, padx=(10, 5), pady=(0, 5),
-                              sticky=(W, E))
+            container.cf.grid(
+                row=4, column=0, padx=(10, 5), pady=(0, 5), sticky=(W, E)
+            )
 
-            container.calc_full_btn = Button(container,
-                                             text=" Calculate Choghadiya for full day",
-                                             command=container.calculate_full)
-            container.calc_full_btn.grid(row=0, column=1, rowspan=4,
-                                         padx=(0, 10), pady=(0, 0),
-                                         sticky=W + E + S + N)
+            container.calc_full_btn = Button(
+                container,
+                text=" Calculate Choghadiya for full day",
+                command=container.calculate_full,
+            )
+            container.calc_full_btn.grid(
+                row=0,
+                column=1,
+                rowspan=4,
+                padx=(0, 10),
+                pady=(0, 0),
+                sticky=W + E + S + N,
+            )
 
-            container.calc_btn = Button(container,
-                                        text=" Calculate Choghadiya for this moment",
-                                        command=container.calculate)
-            container.calc_btn.grid(row=4, column=1, padx=(0, 10), pady=(0, 5),
-                                    sticky=W + E + S + N)
+            container.calc_btn = Button(
+                container,
+                text=" Calculate Choghadiya for this moment",
+                command=container.calculate,
+            )
+            container.calc_btn.grid(
+                row=4, column=1, padx=(0, 10), pady=(0, 5), sticky=W + E + S + N
+            )
             return
 
         if parent is not None:
@@ -108,27 +135,30 @@ class CSSApp(Frame):
 
         if app_icon is None:
             spn = vau.get_script_filepath(__file__)
-            logo_file_name = spn / Path('config/logo.png')
+            logo_file_name = spn / Path("config/logo.png")
             if os.path.exists(logo_file_name):
                 photo = PhotoImage(file=logo_file_name)
                 self.master.iconphoto(False, photo)
             else:
-                print('logo file not found.')
+                print("logo file not found.")
         else:
             if os.path.exists(app_icon):
                 photo = PhotoImage(file=app_icon)
                 self.master.iconphoto(False, photo)
             else:
-                print('{} file not found.'.format(app_icon))
+                print("{} file not found.".format(app_icon))
         self.pack()
         self.master.protocol("WM_DELETE_WINDOW", self.client_exit)
         return
 
     def client_exit(self):
-        if self.ask("Decide", "Are you sure to exit?") == 'yes':
+        if self.ask("Decide", "Are you sure to exit?") == "yes":
             self.master.destroy()
         else:
-            self.show_message('Return', 'Ok then, you will now return to the application screen.')
+            self.show_message(
+                "Return",
+                "Ok then, you will now return to the application screen.",
+            )
         return
 
     def run(self):
@@ -145,21 +175,28 @@ class CSSApp(Frame):
         return
 
     def disable_all_btn(self):
-        self.calc_btn.config(state='disabled')
-        self.calc_full_btn.config(state='disabled')
+        self.calc_btn.config(state="disabled")
+        self.calc_full_btn.config(state="disabled")
         return
 
     def enable_all_btn(self):
-        self.calc_btn.config(state='normal')
-        self.calc_full_btn.config(state='normal')
+        self.calc_btn.config(state="normal")
+        self.calc_full_btn.config(state="normal")
         return
 
     def calculate_full(self):
+        d0 = self.lo.get(1.0, "end-1c")
         d1 = self.de.get
-        d2 = self.sr.get
-        d3 = self.ss.get
         d4 = self.nsr.get
+        print(d0, d1, d4)
         # answer = scc.calculate(d1, d2, d3, d4)
+        if d0:
+            d2, d3 = suntime(location=d0, date=d1)
+        else:
+            d2 = self.sr.get
+            d3 = self.ss.get
+
+        print(d0, d1, d3, d4)
         answer = ch.Choghadiya(d1, d2, d3, d4)
         self.bell()
         self.show_choghadiya(answer)
@@ -167,20 +204,27 @@ class CSSApp(Frame):
 
     def calculate(self):
         self.disable_all_btn()
+        d0 = self.lo.get
         d1 = self.de.get
         d2 = self.sr.get
         d3 = self.ss.get
         d4 = self.nsr.get
         d5 = self.cf.get
+        if d0:
+            d2, d3 = suntime.suntime(d0)
+        else:
+            d2 = self.sr.get
+            d3 = self.ss.get
 
         # answer = scc.calculate_for_specific_time(d1, d2, d3, d4, d5)
         answer = ch.Choghadiya(d1, d2, d3, d4)
         xch = answer.current_choghadiyu(d5)
 
-        text_ans = """Currently, at {:%X}, on {:} {:} Choghadiyu is running. 
+        text_ans = """Currently, at {:%X}, on {:} {:} Choghadiyu is running.
 It started at {:%X} and will last till {:%X}.
-        """.format(d5, answer.vedic_weekday_name, xch.ch_name,
-                   xch.start, xch.end)
+        """.format(
+            d5, answer.vedic_weekday_name, xch.ch_name, xch.start, xch.end
+        )
         self.bell()
         self.show_message("Result ...", text_ans)
         self.cf.set(dttm.now())
@@ -192,7 +236,7 @@ It started at {:%X} and will last till {:%X}.
         self.result_win = Toplevel(self.master)
         self.result_win.protocol("WM_DELETE_WINDOW", self.close_result_win)
 
-        ttl = "Choghadiya for Vedic day \"{:%A}\"".format(self.de.get)
+        ttl = 'Choghadiya for Vedic day "{:%A}"'.format(self.de.get)
         self.result_win.title(ttl)
 
         day_title = Label(self.result_win, text="Day Choghadiya")
@@ -200,34 +244,37 @@ It started at {:%X} and will last till {:%X}.
         night_title = Label(self.result_win, text="Night Choghadiya")
         night_title.grid(row=0, column=6, columnspan=4)
 
-        close_btn = Button(self.result_win, text="Close this window",
-                           command=self.close_result_win)
+        close_btn = Button(
+            self.result_win,
+            text="Close this window",
+            command=self.close_result_win,
+        )
         close_btn.grid(row=10, column=0, columnspan=10, sticky=(W, E))
 
         for x in range(1, 9):
             l1 = Label(self.result_win, text="{:>02}".format(x))
             l1.grid(row=x, column=0, padx=(5, 0), pady=(5, 5), sticky=E)
 
-            l2 = Label(self.result_win, text=xch[x]['name'])
+            l2 = Label(self.result_win, text=xch[x]["name"])
             l2.grid(row=x, column=1, padx=(5, 5), pady=0, sticky=W)
 
-            l3 = Label(self.result_win, text="{:%X}".format(xch[x]['start']))
+            l3 = Label(self.result_win, text="{:%X}".format(xch[x]["start"]))
             l3.grid(row=x, column=2, padx=(5, 5), pady=0, sticky=E)
 
-            l4 = Label(self.result_win, text="{:%X}".format(xch[x]['end']))
+            l4 = Label(self.result_win, text="{:%X}".format(xch[x]["end"]))
             l4.grid(row=x, column=3, padx=(5, 15), pady=0, sticky=W)
 
         for x in range(9, 17):
             l1 = Label(self.result_win, text="{:>02}".format(x))
             l1.grid(row=x - 8, column=6, padx=(5, 0), pady=(5, 5), sticky=E)
 
-            l2 = Label(self.result_win, text=xch[x]['name'])
+            l2 = Label(self.result_win, text=xch[x]["name"])
             l2.grid(row=x - 8, column=7, padx=(5, 5), pady=0, sticky=W)
 
-            l3 = Label(self.result_win, text="{:%X}".format(xch[x]['start']))
+            l3 = Label(self.result_win, text="{:%X}".format(xch[x]["start"]))
             l3.grid(row=x - 8, column=8, padx=(5, 5), pady=0, sticky=E)
 
-            l4 = Label(self.result_win, text="{:%X}".format(xch[x]['end']))
+            l4 = Label(self.result_win, text="{:%X}".format(xch[x]["end"]))
             l4.grid(row=x - 8, column=9, padx=(5, 15), pady=0, sticky=W)
 
         vertical_sep = Separator(self.result_win, orient=VERTICAL)
@@ -277,43 +324,60 @@ def main(arg1=None, arg2=None, arg3=None, arg4=None, arg5=None):
     return
 
 
-if __name__ == '__main__':
-    scc_gui_parser = ap.ArgumentParser(prog='SCC',
-                                       usage='%(prog)s [options]',
-                                       description='Simple Choghadiya Calculator.',
-                                       epilog="Simple and easy way to calculate "
-                                              "Choghadiya that is part of Sanaatan "
-                                              "Panchang."
-                                       )
-    scc_gui_parser.add_argument('-v', '--version', action='version',
-                                version='%(prog)s 0.0.1 (Unstable Alpha)')
+if __name__ == "__main__":
+    scc_gui_parser = ap.ArgumentParser(
+        prog="SCC",
+        usage="%(prog)s [options]",
+        description="Simple Choghadiya Calculator.",
+        epilog="Simple and easy way to calculate "
+        "Choghadiya that is part of Sanaatan "
+        "Panchang.",
+    )
+    scc_gui_parser.add_argument(
+        "-v",
+        "--version",
+        action="version",
+        version="%(prog)s 0.0.1 (Unstable Alpha)",
+    )
 
-    date_group = scc_gui_parser.add_argument_group('date_group', 'Date Group')
-    date_group.add_argument('-d', "--date",
-                            help="Date - format YYYY-MM-DD",
-                            required=False,
-                            type=vau.date_type_validation,
-                            default="{:%Y-%m-%d}".format(dttm.today()))
+    date_group = scc_gui_parser.add_argument_group("date_group", "Date Group")
+    date_group.add_argument(
+        "-d",
+        "--date",
+        help="Date - format YYYY-MM-DD",
+        required=False,
+        type=vau.date_type_validation,
+        default="{:%Y-%m-%d}".format(dttm.today()),
+    )
 
-    events_group = scc_gui_parser.add_argument_group('events_group',
-                                                     'Sun related events Group')
-    events_group.add_argument("--sunrise",
-                              help="Sunrise Time - format HH:MM[:SS]",
-                              required=False,
-                              type=vau.time_type_validation)
-    events_group.add_argument("--sunset",
-                              help="Sunset Time - format HH:MM[:SS]",
-                              required=False,
-                              type=vau.time_type_validation)
-    events_group.add_argument("--next-sunrise",
-                              help="Next Sunrise Time - format HH:MM[:SS]",
-                              required=False,
-                              type=vau.time_type_validation)
-    scc_gui_parser.add_argument("--calc-at",
-                                help="Calc for Time - format HH:MM[:SS]",
-                                required=False,
-                                type=vau.time_type_validation,
-                                default="{:%H:%M:%S}".format(dttm.now().time()))
+    events_group = scc_gui_parser.add_argument_group(
+        "events_group", "Sun related events Group"
+    )
+    events_group.add_argument(
+        "--sunrise",
+        help="Sunrise Time - format HH:MM[:SS]",
+        required=False,
+        type=vau.time_type_validation,
+    )
+    events_group.add_argument(
+        "--sunset",
+        help="Sunset Time - format HH:MM[:SS]",
+        required=False,
+        type=vau.time_type_validation,
+    )
+    events_group.add_argument(
+        "--next-sunrise",
+        help="Next Sunrise Time - format HH:MM[:SS]",
+        required=False,
+        type=vau.time_type_validation,
+    )
+    scc_gui_parser.add_argument(
+        "--calc-at",
+        help="Calc for Time - format HH:MM[:SS]",
+        required=False,
+        type=vau.time_type_validation,
+        default="{:%H:%M:%S}".format(dttm.now().time()),
+    )
     args = scc_gui_parser.parse_args()
 
     if args.next_sunrise is None:
